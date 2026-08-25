@@ -1,6 +1,8 @@
 # Changelog
 
 # v0.0.3 (draft)
+- Extension key renamed `smschat` → `sms_chat`; settings are now `sms_chat_*`, routes `civicrm/contact/view/sms_chat` and `civicrm/admin/sms_chat`; env var names unchanged (`CIVICRM_SMSCHAT_*`)
+- Line filter is applied server-side, so a filtered view pages exactly like the full thread; new "Unknown" chip for messages with no line attribution
 
 # v0.0.2 (2026-08-24)
 - Commit the built `dist/` so tags (and Packagist/composer installs) carry the UI bundle; release workflow back to plain tag-push; drop the composer-downloads pin
@@ -10,7 +12,7 @@
 # v0.0.1 (2026-08-24)
 - SMS Chat tab on the contact record: Google Messages-style thread over native SMS activities (Inbound SMS / SMS delivery), sender names, day grouping, tapback chips, 5s live polling
 - API4 `SmsChat.getContext` / `getMessages` / `send`
-- Line attribution: `SMS_Chat` custom fields (line/contact number), Twilio line resolver with a `smschat.resolvers` extension point, inbound tagging with optional details preamble
+- Line attribution: `SMS_Chat` custom fields (line/contact number), Twilio line resolver with a `sms_chat.resolvers` extension point, inbound tagging with optional details preamble
 - Per-line color coding and filter; composer with line picker, 460-char counter, optimistic send with retry
 - Infinite scroll back through history (pages of 50, cursored on date + id)
 - Every bubble names the contact-side number it travelled to/from and the line, when known

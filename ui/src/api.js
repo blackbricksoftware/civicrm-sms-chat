@@ -10,8 +10,9 @@ export async function getContext(contactId) {
   return r[0];
 }
 
-export async function getMessages(contactId, { sinceId = null, before = null, limit = 50 } = {}) {
+export async function getMessages(contactId, { sinceId = null, before = null, limit = 50, lineId = null } = {}) {
   const params = { contactId, sinceId, limit };
+  if (lineId !== null && lineId !== 'all') params.lineId = lineId;
   if (before) { params.beforeId = before.id; params.beforeAt = before.at; }
   const r = await api4('SmsChat', 'getMessages', params);
   return Array.from(r);

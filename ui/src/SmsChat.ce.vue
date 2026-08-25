@@ -23,11 +23,19 @@ const list = ref(null);
 const PAGE = 50;
 const POLL_MS = 5000;
 
-const filtered = computed(() => lineFilter.value === 'all'
-  ? messages.value
-  : messages.value.filter(m => m.lineId === lineFilter.value));
+// The line filter is applied server-side (see GetMessages.lineId) so every
+// page is a full page; the list is shown as-is. A message just sent from a
+// different line than the active filter stays visible until the view reloads.
+const filtered = computed(() => messages.value);
+const lineParam = computed(() => (lineFilter.value === 'all' ? null : lineFilter.value));
 
 const newestId = computed(() => messages.value.reduce((n, m) => (typeof m.id === 'number' && m.id > n ? m.id : n), 0));
+// Every fetch belongs to a "view" (the current line filter). Switching the
+// filter bumps the generation, and any in-flight page/poll from the previous
+// view is discarded when it lands — otherwise older-page or poll results for
+// line A could splice into the list for line B.
+let view = 0;
+const reloading = ref(false);
 const colors = computed(() => lineColors(context.value ? context.value.lines : []));
 let tmpSeq = 0;
 
@@ -44,7 +52,7 @@ async function load() {
   try {
     const [ctx, msgs] = await Promise.all([
       getContext(props.contactId),
-      getMessages(props.contactId, { limit: PAGE }),
+      getMessages(props.contactId, { limit: PAGE, lineId: lineParam.value }),
     ]);
     context.value = ctx;
     messages.value = msgs;
@@ -64,13 +72,15 @@ async function load() {
 async function loadMore() {
   if (loadingMore.value || !hasMore.value || !messages.value.length) return;
   loadingMore.value = true;
+  const v = view;
   try {
     // Infinite scroll upward: the newest PAGE messages strictly before the
     // oldest one we hold, cursored on (date, id) — the list is chronological,
     // so that's the first real (non-optimistic) message.
     const oldest = messages.value.find(m => typeof m.id === 'number');
     if (!oldest) return;
-    const older = await getMessages(props.contactId, { before: { id: oldest.id, at: oldest.at }, limit: PAGE });
+    const older = await getMessages(props.contactId, { before: { id: oldest.id, at: oldest.at }, limit: PAGE, lineId: lineParam.value });
+    if (v !== view) return; // filter changed while this page was loading
     hasMore.value = older.length >= PAGE;
     if (older.length) {
       const known = new Set(messages.value.map(m => m.id));
@@ -84,9 +94,11 @@ async function loadMore() {
 }
 
 async function poll() {
-  if (document.visibilityState !== 'visible' || loading.value) return;
+  if (document.visibilityState !== 'visible' || loading.value || reloading.value) return;
+  const v = view;
   try {
-    const fresh = await getMessages(props.contactId, { sinceId: newestId.value || null, limit: PAGE });
+    const fresh = await getMessages(props.contactId, { sinceId: newestId.value || null, limit: PAGE, lineId: lineParam.value });
+    if (v !== view) return; // filter changed while polling
     if (fresh.length) {
       const known = new Set(messages.value.map(m => m.id));
       const add = fresh.filter(m => !known.has(m.id));
@@ -134,6 +146,26 @@ function onRetry(m) { onSend(m.body, m); }
 
 watch(lineId, (v) => { try { if (v) localStorage.setItem(storageKey.value, String(v)); } catch (e) { /* ignore */ } });
 
+// Changing the line filter is a fresh, correctly-paged view of the thread:
+// reload the newest page under the new filter. The header (and the chips you
+// just clicked) stay put; only the thread swaps, and MessageList is keyed by
+// the filter so each view starts with clean scroll state.
+watch(lineFilter, async () => {
+  const v = ++view;
+  reloading.value = true; error.value = '';
+  loadingMore.value = false;
+  try {
+    const msgs = await getMessages(props.contactId, { limit: PAGE, lineId: lineParam.value });
+    if (v !== view) return; // superseded by a newer filter change
+    messages.value = msgs;
+    hasMore.value = msgs.length >= PAGE;
+  } catch (e) {
+    if (v === view) error.value = errorMessage(e);
+  } finally {
+    if (v === view) reloading.value = false;
+  }
+});
+
 let timer = null;
 onMounted(() => {
   load();
@@ -158,7 +190,7 @@ onBeforeUnmount(() => {
         </div>
         <LineFilter v-if="context.lines.length > 1" v-model="lineFilter" :lines="context.lines" :colors="colors" />
       </header>
-      <MessageList ref="list" :messages="filtered" :has-more="hasMore" :loading-more="loadingMore" :colors="colors" @load-more="loadMore" @retry="onRetry" />
+      <MessageList :key="String(lineFilter)" ref="list" :messages="filtered" :has-more="hasMore" :loading-more="loadingMore" :reloading="reloading" :colors="colors" @load-more="loadMore" @retry="onRetry" />
       <Composer :context="context" v-model:lineId="lineId" :sending="sending" :colors="colors" @send="onSend" />
     </template>
   </div>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<extension key="smschat" type="module">
-  <file>smschat</file>
+<extension key="sms_chat" type="module">
+  <file>sms_chat</file>
   <name>SMS Chat</name>
   <description>Real-time SMS conversation view on the contact record: a Google Messages-style chat tab over CiviCRM's native SMS activities (Inbound SMS / SMS delivery), with per-line attribution, sending, and polling updates. Provider-agnostic with Twilio support included.</description>
   <license>AGPL-3.0</license>
@@ -18,7 +18,7 @@
     <url desc="Licensing">https://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <releaseDate>2026-08-11</releaseDate>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <develStage>alpha</develStage>
   <compatibility mode="semver">
     <comments>Semantic versioning. For example, compatibility with "6.1" implies compatibility with "6.2".</comments>
@@ -35,14 +35,14 @@
     <comments>Listed versions. For example, specify both "4" and "5".</comments>
     <ver>5</ver>
   </smarty_compatibility>
-  <comments>Chat-style SMS UI over native SMS activities. Env-driven configuration via CIVICRM_SMSCHAT_* variables; subscriber-pattern hooks under BlackBrickSoftware\CiviCRMSmsChat\Subscriber\. See DESIGN.md.</comments>
+  <comments>Chat-style SMS UI over native SMS activities. Env-driven configuration via CIVICRM_SMS_CHAT_* variables; subscriber-pattern hooks under BlackBrickSoftware\CiviCRMSmsChat\Subscriber\. See DESIGN.md.</comments>
   <classloader>
     <psr0 prefix="CRM_" path="."/>
     <psr4 prefix="Civi\" path="Civi"/>
     <psr4 prefix="BlackBrickSoftware\CiviCRMSmsChat\" path="src"/>
   </classloader>
   <civix>
-    <namespace>CRM/Smschat</namespace>
+    <namespace>CRM/SmsChat</namespace>
     <format>25.10.2</format>
     <angularModule>crmSmschat</angularModule>
   </civix>
@@ -53,5 +53,5 @@
     <mixin>setting-php@1.0.0</mixin>
     <mixin>smarty@1.0.3</mixin>
   </mixins>
-  <upgrader>CRM_Smschat_Upgrader</upgrader>
+  <upgrader>CRM_SmsChat_Upgrader</upgrader>
 </extension>

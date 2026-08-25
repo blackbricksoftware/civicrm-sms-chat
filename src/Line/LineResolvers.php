@@ -8,16 +8,16 @@ use Civi\Core\Event\GenericHookEvent;
 /**
  * Registry of LineResolverInterface implementations.
  *
- * Built-in: Twilio. Extension point: listen to the `smschat.resolvers`
+ * Built-in: Twilio. Extension point: listen to the `sms_chat.resolvers`
  * event and append to $event->resolvers — e.g.
  *
- *   Civi::dispatcher()->addListener('smschat.resolvers', function ($e) {
+ *   Civi::dispatcher()->addListener('sms_chat.resolvers', function ($e) {
  *     $e->resolvers[] = new MyProviderLineResolver();
  *   });
  */
 final class LineResolvers {
 
-  public const EVENT = 'smschat.resolvers';
+  public const EVENT = 'sms_chat.resolvers';
 
   /** @var LineResolverInterface[]|null */
   private static ?array $resolvers = NULL;

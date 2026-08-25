@@ -9,7 +9,7 @@ namespace BlackBrickSoftware\CiviCRMSmsChat\Line;
  * number(s) a provider row sends from, and (b) where an inbound webhook
  * request carries its To/From. Each SMS provider gets a resolver.
  *
- * Third-party providers register theirs on the `smschat.resolvers` event
+ * Third-party providers register theirs on the `sms_chat.resolvers` event
  * (see LineResolvers). Unresolvable providers degrade gracefully: the line
  * is identified by its title only and inbound stays untagged.
  */

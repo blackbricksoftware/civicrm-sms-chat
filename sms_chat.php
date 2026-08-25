@@ -2,10 +2,10 @@
 declare(strict_types = 1);
 
 // phpcs:disable PSR1.Files.SideEffects
-require_once 'smschat.civix.php';
+require_once 'sms_chat.civix.php';
 // phpcs:enable
 
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_container/
  */
-function smschat_civicrm_container(ContainerBuilder $container): void {
+function sms_chat_civicrm_container(ContainerBuilder $container): void {
   $container->autowire(\BlackBrickSoftware\CiviCRMSmsChat\Service\Config::class)->setPublic(TRUE);
   $container->autowire(\BlackBrickSoftware\CiviCRMSmsChat\Service\Sender::class)->setPublic(TRUE);
 
@@ -38,8 +38,8 @@ function smschat_civicrm_container(ContainerBuilder $container): void {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
-function smschat_civicrm_config(\CRM_Core_Config $config): void {
-  _smschat_civix_civicrm_config($config);
+function sms_chat_civicrm_config(\CRM_Core_Config $config): void {
+  _sms_chat_civix_civicrm_config($config);
 }
 
 /**
@@ -47,8 +47,8 @@ function smschat_civicrm_config(\CRM_Core_Config $config): void {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function smschat_civicrm_install(): void {
-  _smschat_civix_civicrm_install();
+function sms_chat_civicrm_install(): void {
+  _sms_chat_civix_civicrm_install();
 }
 
 /**
@@ -56,6 +56,6 @@ function smschat_civicrm_install(): void {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function smschat_civicrm_enable(): void {
-  _smschat_civix_civicrm_enable();
+function sms_chat_civicrm_enable(): void {
+  _sms_chat_civix_civicrm_enable();
 }

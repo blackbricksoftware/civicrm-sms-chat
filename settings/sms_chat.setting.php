@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 
 /**
  * Every setting here is both UI-editable (Administer › System Settings ›
@@ -11,8 +11,8 @@ use CRM_Smschat_ExtensionUtil as E;
  * (BlackBrickSoftware\CiviCRMSmsChat\Subscriber\SettingsFormSubscriber).
  */
 return [
-  'smschat_details_preamble' => [
-    'name' => 'smschat_details_preamble',
+  'sms_chat_details_preamble' => [
+    'name' => 'sms_chat_details_preamble',
     'type' => 'Boolean',
     'default' => TRUE,
     'html_type' => 'checkbox',
@@ -23,8 +23,8 @@ return [
     'is_env_loadable' => TRUE,
     'global_name' => 'CIVICRM_SMSCHAT_DETAILS_PREAMBLE',
   ],
-  'smschat_allowed_recipients' => [
-    'name' => 'smschat_allowed_recipients',
+  'sms_chat_allowed_recipients' => [
+    'name' => 'sms_chat_allowed_recipients',
     'type' => 'String',
     'default' => '',
     'html_type' => 'text',
@@ -35,8 +35,8 @@ return [
     'is_env_loadable' => TRUE,
     'global_name' => 'CIVICRM_SMSCHAT_ALLOWED_RECIPIENTS',
   ],
-  'smschat_environment_lockdown' => [
-    'name' => 'smschat_environment_lockdown',
+  'sms_chat_environment_lockdown' => [
+    'name' => 'sms_chat_environment_lockdown',
     'type' => 'Boolean',
     'default' => TRUE,
     'html_type' => 'checkbox',
@@ -47,8 +47,8 @@ return [
     'is_env_loadable' => TRUE,
     'global_name' => 'CIVICRM_SMSCHAT_ENVIRONMENT_LOCKDOWN',
   ],
-  'smschat_test_mode' => [
-    'name' => 'smschat_test_mode',
+  'sms_chat_test_mode' => [
+    'name' => 'sms_chat_test_mode',
     'type' => 'Boolean',
     'default' => FALSE,
     'html_type' => 'checkbox',

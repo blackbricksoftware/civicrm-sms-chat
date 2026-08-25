@@ -31,9 +31,11 @@ final class Conversation {
    *   message the client holds; returns the newest $limit strictly before it
    * @param int $limit page size for the initial/history pages
    * @param bool $checkPermissions
+   * @param int|null $lineId restrict to one line (SmsProvider id); 0 = messages
+   *   with no line attribution at all; NULL = every line
    * @return array{messages: array, hasMore: bool}
    */
-  public static function messages(int $contactId, ?int $sinceId, ?array $before, int $limit, bool $checkPermissions): array {
+  public static function messages(int $contactId, ?int $sinceId, ?array $before, int $limit, bool $checkPermissions, ?int $lineId = NULL): array {
     $query = Activity::get($checkPermissions)
       ->addSelect('id', 'activity_type_id:name', 'details', 'activity_date_time', 'result', 'source_contact_id', 'target_contact_id', 'phone_number')
       ->addWhere('activity_type_id:name', 'IN', self::TYPES)
@@ -42,6 +44,30 @@ final class Conversation {
 
     if (self::customFieldsAvailable()) {
       $query->addSelect('SMS_Chat.line_number', 'SMS_Chat.peer_number');
+    }
+
+    // Line filter is applied SERVER-SIDE so a filtered view pages exactly like
+    // the full thread (filtering client-side would leave near-empty pages and
+    // walk the whole history to fill a screen). Attribution sources: the
+    // SMS_Chat custom field, plus — for inbound tagged only by a details
+    // preamble ("To: +1…", the format this extension itself writes) — a LIKE
+    // on details.
+    if ($lineId !== NULL && self::customFieldsAvailable()) {
+      if ($lineId === 0) {
+        $query->addWhere('SMS_Chat.line_number', 'IS EMPTY');
+        $query->addWhere('details', 'NOT LIKE', '%To: +%');
+      }
+      else {
+        $numbers = Lines::all()[$lineId]['numbers'] ?? [];
+        if (!$numbers) {
+          return ['messages' => [], 'hasMore' => FALSE];
+        }
+        $clauses = [['SMS_Chat.line_number', 'IN', $numbers]];
+        foreach ($numbers as $number) {
+          $clauses[] = ['details', 'LIKE', '%To: ' . $number . '%'];
+        }
+        $query->addClause('OR', ...$clauses);
+      }
     }
 
     if ($sinceId) {

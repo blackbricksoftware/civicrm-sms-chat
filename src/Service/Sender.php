@@ -104,7 +104,7 @@ class Sender {
         $message = $result instanceof \Throwable ? $result->getMessage() : $result->getMessage();
         // No phantom "sent" record for a message the provider rejected.
         Activity::delete(FALSE)->addWhere('id', '=', $parentId)->execute();
-        \Civi::log()->error('smschat: send failed for contact {cid} via provider {pid}: {err}', ['cid' => $contactId, 'pid' => $providerId, 'err' => $message]);
+        \Civi::log()->error('sms_chat: send failed for contact {cid} via provider {pid}: {err}', ['cid' => $contactId, 'pid' => $providerId, 'err' => $message]);
         throw new \CRM_Core_Exception(ts('The SMS provider rejected the message: %1', [1 => $message]));
       }
       // The provider (Twilio at least) creates the per-recipient `SMS delivery`

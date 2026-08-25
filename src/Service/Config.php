@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace BlackBrickSoftware\CiviCRMSmsChat\Service;
 
 /**
- * Reads smschat_* settings and reports which are env-overridden.
+ * Reads sms_chat_* settings and reports which are env-overridden.
  *
  * All reads go through Civi::settings(), so CiviCRM's own resolution order
  * applies: env var (`global_name`) → $civicrm_setting → DB → default.
@@ -21,20 +21,20 @@ class Config {
   }
 
   public function detailsPreamble(): bool {
-    return $this->readBool('smschat_details_preamble');
+    return $this->readBool('sms_chat_details_preamble');
   }
 
   public function environmentLockdown(): bool {
-    return $this->readBool('smschat_environment_lockdown');
+    return $this->readBool('sms_chat_environment_lockdown');
   }
 
   public function testMode(): bool {
-    return $this->readBool('smschat_test_mode');
+    return $this->readBool('sms_chat_test_mode');
   }
 
   /** @return string[] normalized numbers/prefixes (+digits) */
   public function allowedRecipients(): array {
-    $raw = (string) $this->get('smschat_allowed_recipients');
+    $raw = (string) $this->get('sms_chat_allowed_recipients');
     $parts = preg_split('/[\s,]+/', $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [];
     return array_values(array_filter(array_map([Lines::class, 'normalize'], $parts), fn($n) => $n !== ''));
   }

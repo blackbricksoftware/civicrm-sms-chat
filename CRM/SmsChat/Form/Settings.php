@@ -2,16 +2,16 @@
 declare(strict_types = 1);
 
 use BlackBrickSoftware\CiviCRMSmsChat\Service\Config;
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 
 /**
- * Admin UI for smschat_* settings (Administer › System Settings › SMS Chat).
+ * Admin UI for sms_chat_* settings (Administer › System Settings › SMS Chat).
  *
- * All fields are backed by settings/smschat.setting.php. Fields whose env
+ * All fields are backed by settings/sms_chat.setting.php. Fields whose env
  * var (CIVICRM_SMSCHAT_*) is set are frozen by
  * BlackBrickSoftware\CiviCRMSmsChat\Subscriber\SettingsFormSubscriber.
  */
-class CRM_Smschat_Form_Settings extends CRM_Core_Form {
+class CRM_SmsChat_Form_Settings extends CRM_Core_Form {
 
   public function buildQuickForm(): void {
     \CRM_Utils_System::setTitle(E::ts('SMS Chat Settings'));
@@ -20,11 +20,11 @@ class CRM_Smschat_Form_Settings extends CRM_Core_Form {
     $this->assign('smschatEnvironment', $config->environment());
     $this->assign('smschatLockdownActive', $config->lockdownActive());
 
-    $this->add('checkbox', 'smschat_environment_lockdown', E::ts('Lock down sending outside Production'));
-    $this->add('text', 'smschat_allowed_recipients', E::ts('Allowed recipients'),
+    $this->add('checkbox', 'sms_chat_environment_lockdown', E::ts('Lock down sending outside Production'));
+    $this->add('text', 'sms_chat_allowed_recipients', E::ts('Allowed recipients'),
       ['size' => 60, 'placeholder' => '+13235551234, +1323']);
-    $this->add('checkbox', 'smschat_test_mode', E::ts('Test mode (record, do not deliver)'));
-    $this->add('checkbox', 'smschat_details_preamble', E::ts('Write From/To preamble into inbound SMS details'));
+    $this->add('checkbox', 'sms_chat_test_mode', E::ts('Test mode (record, do not deliver)'));
+    $this->add('checkbox', 'sms_chat_details_preamble', E::ts('Write From/To preamble into inbound SMS details'));
 
     $this->addButtons([
       ['type' => 'submit', 'name' => E::ts('Save'), 'isDefault' => TRUE],
@@ -53,7 +53,7 @@ class CRM_Smschat_Form_Settings extends CRM_Core_Form {
         continue;
       }
       $value = $values[$name] ?? NULL;
-      if (in_array($name, ['smschat_environment_lockdown', 'smschat_test_mode', 'smschat_details_preamble'], TRUE)) {
+      if (in_array($name, ['sms_chat_environment_lockdown', 'sms_chat_test_mode', 'sms_chat_details_preamble'], TRUE)) {
         $value = !empty($value);
       }
       $settings->set($name, $value);
@@ -78,10 +78,10 @@ class CRM_Smschat_Form_Settings extends CRM_Core_Form {
 
   private function getSettingNames(): array {
     return [
-      'smschat_environment_lockdown',
-      'smschat_allowed_recipients',
-      'smschat_test_mode',
-      'smschat_details_preamble',
+      'sms_chat_environment_lockdown',
+      'sms_chat_allowed_recipients',
+      'sms_chat_test_mode',
+      'sms_chat_details_preamble',
     ];
   }
 

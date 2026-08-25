@@ -8,6 +8,7 @@ const props = defineProps({
   hasMore: { type: Boolean, default: false },
   loadingMore: { type: Boolean, default: false },
   colors: { type: Map, default: () => new Map() },
+  reloading: { type: Boolean, default: false },
 });
 const emit = defineEmits(['load-more', 'retry']);
 
@@ -43,7 +44,7 @@ function scrollToBottom(smooth = false) {
 function onScroll() {
   atBottom.value = isNearBottom();
   if (atBottom.value) unseen.value = 0;
-  if (scroller.value.scrollTop < 30 && props.hasMore && !props.loadingMore) emit('load-more');
+  if (scroller.value.scrollTop < 30 && props.hasMore && !props.loadingMore && !props.reloading) emit('load-more');
 }
 
 let lastCount = 0;
@@ -69,7 +70,7 @@ watch(() => props.messages, async (list) => {
   // A short thread (or a heavily filtered one) may not be scrollable at all,
   // which would leave the scroll-to-top trigger unreachable: keep paging
   // until there is something to scroll or history runs out.
-  if (el && props.hasMore && !props.loadingMore && el.scrollHeight <= el.clientHeight + 4) emit('load-more');
+  if (el && props.hasMore && !props.loadingMore && !props.reloading && el.scrollHeight <= el.clientHeight + 4) emit('load-more');
 }, { deep: false });
 
 onMounted(() => nextTick(() => scrollToBottom()));
@@ -84,7 +85,8 @@ defineExpose({ scrollToBottom });
       <div class="sc-day"><span>{{ g.label }}</span></div>
       <Bubble v-for="it in g.items" :key="it.m.id" :m="it.m" :show-sender="it.showSender" :color="it.m.lineId ? colors.get(it.m.lineId) : ''" @retry="emit('retry', $event)" />
     </template>
-    <div v-if="!messages.length" class="sc-empty">No text messages with this contact yet.</div>
+    <div v-if="reloading" class="sc-empty">Loading…</div>
+    <div v-else-if="!messages.length" class="sc-empty">No text messages with this contact on this line.</div>
   </div>
   <button v-if="unseen" type="button" class="sc-new" @click="scrollToBottom(true)">↓ {{ unseen }} new message{{ unseen > 1 ? 's' : '' }}</button>
 </template>

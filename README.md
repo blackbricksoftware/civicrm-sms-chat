@@ -40,10 +40,10 @@ field read-only):
 
 | Env var | Setting | Notes |
 |---|---|---|
-| `CIVICRM_SMSCHAT_ENVIRONMENT_LOCKDOWN` | `smschat_environment_lockdown` | Default on. Outside a `Production` CiviCRM environment, only allowed recipients can be texted (deny-all when the list is empty). |
-| `CIVICRM_SMSCHAT_ALLOWED_RECIPIENTS` | `smschat_allowed_recipients` | Comma-separated E.164 numbers or prefixes. Always enforced when set. |
-| `CIVICRM_SMSCHAT_TEST_MODE` | `smschat_test_mode` | Record sends as activities but never hand them to the provider. |
-| `CIVICRM_SMSCHAT_DETAILS_PREAMBLE` | `smschat_details_preamble` | Default on. Prepend "From/To" to inbound activity details. |
+| `CIVICRM_SMSCHAT_ENVIRONMENT_LOCKDOWN` | `sms_chat_environment_lockdown` | Default on. Outside a `Production` CiviCRM environment, only allowed recipients can be texted (deny-all when the list is empty). |
+| `CIVICRM_SMSCHAT_ALLOWED_RECIPIENTS` | `sms_chat_allowed_recipients` | Comma-separated E.164 numbers or prefixes. Always enforced when set. |
+| `CIVICRM_SMSCHAT_TEST_MODE` | `sms_chat_test_mode` | Record sends as activities but never hand them to the provider. |
+| `CIVICRM_SMSCHAT_DETAILS_PREAMBLE` | `sms_chat_details_preamble` | Default on. Prepend "From/To" to inbound activity details. |
 
 Set the CiviCRM environment (Administer › System Settings › Misc, or
 `CIVICRM_ENVIRONMENT`) to anything but `Production` on dev/staging copies of
@@ -67,5 +67,5 @@ committed; rebuild and commit it with any UI change.
 Extensions live outside the web root; static assets are served from the
 published copy. With the extension installed through composer
 (`civicrm/civicrm-asset-plugin`), `composer civicrm:publish` copies `dist/`
-to `web/assets/smschat/`. While iterating from a plain checkout, copy `dist/`
+to `web/assets/sms_chat/`. While iterating from a plain checkout, copy `dist/`
 there yourself after each build.

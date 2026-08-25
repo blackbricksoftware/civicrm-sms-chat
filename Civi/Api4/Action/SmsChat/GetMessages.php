@@ -48,9 +48,16 @@ class GetMessages extends AbstractAction {
    */
   protected int $limit = 50;
 
+  /**
+   * Restrict to one line (SmsProvider id). 0 = messages with no line
+   * attribution; omit for all lines.
+   * @var int|null
+   */
+  protected ?int $lineId = NULL;
+
   public function _run(Result $result): void {
     $before = ($this->beforeId && $this->beforeAt) ? ['id' => $this->beforeId, 'at' => $this->beforeAt] : NULL;
-    $page = Conversation::messages($this->contactId, $this->sinceId, $before, max(1, min($this->limit, 500)), $this->getCheckPermissions());
+    $page = Conversation::messages($this->contactId, $this->sinceId, $before, max(1, min($this->limit, 500)), $this->getCheckPermissions(), $this->lineId);
     foreach ($page['messages'] as $message) {
       $result[] = $message;
     }

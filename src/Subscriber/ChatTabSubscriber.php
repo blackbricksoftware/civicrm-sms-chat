@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace BlackBrickSoftware\CiviCRMSmsChat\Subscriber;
 
 use Civi\Core\Event\GenericHookEvent;
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -25,7 +25,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *    with contact_id = 0 and context.caller = 'ContactLayout' — the handler
  *    must register the tab cheaply and never do per-contact work here.
  *  - No 'class' on the entry: the tab body is a plain CRM.loadPage AJAX
- *    snippet (CRM_Smschat_Page_Chat), not an ajaxForm/livePage.
+ *    snippet (CRM_SmsChat_Page_Chat), not an ajaxForm/livePage.
  */
 class ChatTabSubscriber implements EventSubscriberInterface {
 
@@ -44,13 +44,13 @@ class ChatTabSubscriber implements EventSubscriberInterface {
 
     $tabs = &$event->tabs;
     $tabs[] = [
-      'id' => 'smschat',
+      'id' => 'sms_chat',
       'title' => E::ts('SMS Chat'),
       'icon' => 'crm-i fa-comments',
       // Right after core's Activities tab (weight 60) — the chat is a view
       // over the same records.
       'weight' => 65,
-      'url' => \CRM_Utils_System::url('civicrm/contact/view/smschat', "reset=1&cid={$contactId}"),
+      'url' => \CRM_Utils_System::url('civicrm/contact/view/sms_chat', "reset=1&cid={$contactId}"),
       // No 'contact_type': organizations text too.
       // No 'count' (yet): a per-contact unread/message count on every summary
       // load is not worth the query until read-tracking exists.

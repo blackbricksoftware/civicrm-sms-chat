@@ -6,10 +6,10 @@
  * The ExtensionUtil class provides small stubs for accessing resources of this
  * extension.
  */
-class CRM_Smschat_ExtensionUtil {
-  const SHORT_NAME = 'smschat';
-  const LONG_NAME = 'smschat';
-  const CLASS_PREFIX = 'CRM_Smschat';
+class CRM_SmsChat_ExtensionUtil {
+  const SHORT_NAME = 'sms_chat';
+  const LONG_NAME = 'sms_chat';
+  const CLASS_PREFIX = 'CRM_SmsChat';
 
   /**
    * Translate a string using the extension's domain.
@@ -77,14 +77,14 @@ class CRM_Smschat_ExtensionUtil {
 
 }
 
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 
 /**
  * (Delegated) Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config
  */
-function _smschat_civix_civicrm_config($config = NULL) {
+function _sms_chat_civix_civicrm_config($config = NULL) {
   static $configured = FALSE;
   if ($configured) {
     return;
@@ -102,8 +102,8 @@ function _smschat_civix_civicrm_config($config = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function _smschat_civix_civicrm_install() {
-  _smschat_civix_civicrm_config();
+function _sms_chat_civix_civicrm_install() {
+  _sms_chat_civix_civicrm_config();
   // Based on <compatibility>, this does not currently require mixin/polyfill.php.
 }
 
@@ -112,8 +112,8 @@ function _smschat_civix_civicrm_install() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function _smschat_civix_civicrm_enable(): void {
-  _smschat_civix_civicrm_config();
+function _sms_chat_civix_civicrm_enable(): void {
+  _sms_chat_civix_civicrm_config();
   // Based on <compatibility>, this does not currently require mixin/polyfill.php.
 }
 
@@ -128,7 +128,7 @@ function _smschat_civix_civicrm_enable(): void {
  *
  * @return bool
  */
-function _smschat_civix_insert_navigation_menu(&$menu, $path, $item) {
+function _sms_chat_civix_insert_navigation_menu(&$menu, $path, $item) {
   // If we are done going down the path, insert menu
   if (empty($path)) {
     $menu[] = [
@@ -149,7 +149,7 @@ function _smschat_civix_insert_navigation_menu(&$menu, $path, $item) {
         if (!isset($entry['child'])) {
           $entry['child'] = [];
         }
-        $found = _smschat_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
+        $found = _sms_chat_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item);
       }
     }
     return $found;
@@ -159,9 +159,9 @@ function _smschat_civix_insert_navigation_menu(&$menu, $path, $item) {
 /**
  * (Delegated) Implements hook_civicrm_navigationMenu().
  */
-function _smschat_civix_navigationMenu(&$nodes) {
+function _sms_chat_civix_navigationMenu(&$nodes) {
   if (!is_callable(['CRM_Core_BAO_Navigation', 'fixNavigationMenu'])) {
-    _smschat_civix_fixNavigationMenu($nodes);
+    _sms_chat_civix_fixNavigationMenu($nodes);
   }
 }
 
@@ -169,17 +169,17 @@ function _smschat_civix_navigationMenu(&$nodes) {
  * Given a navigation menu, generate navIDs for any items which are
  * missing them.
  */
-function _smschat_civix_fixNavigationMenu(&$nodes) {
+function _sms_chat_civix_fixNavigationMenu(&$nodes) {
   $maxNavID = 1;
   array_walk_recursive($nodes, function($item, $key) use (&$maxNavID) {
     if ($key === 'navID') {
       $maxNavID = max($maxNavID, $item);
     }
   });
-  _smschat_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
+  _sms_chat_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
 }
 
-function _smschat_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
+function _sms_chat_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
   $origKeys = array_keys($nodes);
   foreach ($origKeys as $origKey) {
     if (!isset($nodes[$origKey]['attributes']['parentID']) && $parentID !== NULL) {
@@ -194,7 +194,7 @@ function _smschat_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID) {
       $origKey = $newKey;
     }
     if (isset($nodes[$origKey]['child']) && is_array($nodes[$origKey]['child'])) {
-      _smschat_civix_fixNavigationMenuItems($nodes[$origKey]['child'], $maxNavID, $nodes[$origKey]['attributes']['navID']);
+      _sms_chat_civix_fixNavigationMenuItems($nodes[$origKey]['child'], $maxNavID, $nodes[$origKey]['attributes']['navID']);
     }
   }
 }

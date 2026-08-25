@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 
 /**
  * Structured line attribution for SMS activities (see DESIGN.md §4a).

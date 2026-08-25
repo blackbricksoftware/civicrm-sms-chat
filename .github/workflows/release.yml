@@ -38,7 +38,7 @@ jobs:
 
       - name: Create release zip
         run: |
-          zip -r smschat.zip . \
+          zip -r sms_chat.zip . \
             -x ".git/*" \
             -x ".github/*" \
             -x ".gitignore" \
@@ -48,6 +48,6 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: smschat.zip
+          files: sms_chat.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

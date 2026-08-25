@@ -1,10 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-use CRM_Smschat_ExtensionUtil as E;
+use CRM_SmsChat_ExtensionUtil as E;
 
 /**
- * The SMS Chat tab body (civicrm/contact/view/smschat).
+ * The SMS Chat tab body (civicrm/contact/view/sms_chat).
  *
  * Loaded as an AJAX snippet into the contact-summary tab panel by core's
  * jQuery-UI tab machinery (CRM.loadPage with snippet=json). The page itself
@@ -22,7 +22,7 @@ use CRM_Smschat_ExtensionUtil as E;
  * addVars/addSetting do), so it is passed explicitly. The bundle must be
  * IIFE — core skips 'esm' resources on this path (TODO in core).
  */
-class CRM_Smschat_Page_Chat extends CRM_Core_Page {
+class CRM_SmsChat_Page_Chat extends CRM_Core_Page {
 
   public function run(): void {
     $contactId = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);

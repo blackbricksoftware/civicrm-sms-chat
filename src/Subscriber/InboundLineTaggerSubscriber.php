@@ -18,7 +18,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *  1. hook_civicrm_inboundSMS fires BEFORE the activity exists (no id), with
  *     the CRM_SMS_Message in hand. Recover To/From through the provider's
  *     LineResolver and stash them. Optionally (setting
- *     smschat_details_preamble) prepend a human-readable "From/To" preamble
+ *     sms_chat_details_preamble) prepend a human-readable "From/To" preamble
  *     to the body, which processInbound() stores as activity details.
  *  2. hook_civicrm_post on the resulting Inbound SMS activity writes the
  *     stashed numbers into the SMS_Chat custom fields.
@@ -55,7 +55,7 @@ class InboundLineTaggerSubscriber implements EventSubscriberInterface {
       $providerObj = \CRM_SMS_Provider::singleton(['provider_id' => $providerId]);
     }
     catch (\Throwable $e) {
-      \Civi::log()->warning('smschat: could not resolve inbound provider ' . $providerId . ': ' . $e->getMessage());
+      \Civi::log()->warning('sms_chat: could not resolve inbound provider ' . $providerId . ': ' . $e->getMessage());
       return;
     }
     $resolver = $providerRow ? LineResolvers::for($providerRow) : NULL;
@@ -92,7 +92,7 @@ class InboundLineTaggerSubscriber implements EventSubscriberInterface {
         ->execute();
     }
     catch (\Throwable $e) {
-      \Civi::log()->warning('smschat: could not tag inbound activity ' . $event->id . ': ' . $e->getMessage());
+      \Civi::log()->warning('sms_chat: could not tag inbound activity ' . $event->id . ': ' . $e->getMessage());
     }
   }
 

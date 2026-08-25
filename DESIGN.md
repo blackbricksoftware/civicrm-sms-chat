@@ -14,15 +14,15 @@ contacts) live in each install's own private repo, never here. Config is proper 
 `$civicrm_setting` / env in their civicrm.settings.php — an install's
 env-driven style composes naturally on top).
 
-Extension key: `smschat` (composer `blackbricksoftware/civicrm-sms-chat`,
+Extension key: `sms_chat` (composer `blackbricksoftware/civicrm-sms-chat`,
 repo root = extension root). Installs consume it via composer VCS; the
-`type: civicrm-ext` installer path lands it at `ext/smschat/`.
+an installer-path mapping lands it at `ext/sms_chat/` (folder = key).
 
 Structural template: the public BlackBrick extensions `civicrm-saml-auth` and
 `civicrm-container-logs`, whose conventions are adopted wholesale: short
 extension key; code under `src/` in the `BlackBrickSoftware\CiviCRMSmsChat\`
 namespace (`Service/`, `Subscriber/`, `Line/`), API4 classes under `Civi/Api4`
-(where API4 discovery requires them), civix `CRM_Smschat_*` for pages/forms;
+(where API4 discovery requires them), civix `CRM_SmsChat_*` for pages/forms;
 `declare(strict_types = 1)` everywhere; the hooks file carries ONLY
 `hook_civicrm_container` (autowired services + one `addSubscriber` line per
 feature, comment a line to disable it) plus civix-delegated hooks; every
@@ -149,12 +149,12 @@ render it (it would duplicate the delivery row).
 
 ```
 civicrm-sms-chat/                       (repo root = ext root)
-├── info.xml                            key smschat, file "smschat"
+├── info.xml                            key sms_chat, file "sms_chat"
 │                                       mixins: menu-xml@1.0.0, scan-classes@1.0.0, smarty@1.0.3
-│                                       <upgrader>CRM_Smschat_Upgrader</upgrader>
-├── smschat.php                         container hook only (community style)
-├── smschat.civix.php
-├── CRM/Smschat/
+│                                       <upgrader>CRM_SmsChat_Upgrader</upgrader>
+├── sms_chat.php                        container hook only (community style)
+├── sms_chat.civix.php
+├── CRM/SmsChat/
 │   ├── Page/Chat.php                   CRM_Core_Page: cid retrieve, resources, vars
 │   └── Upgrader.php                    empty modern-base stub
 ├── Civi/Smschat/
@@ -170,8 +170,8 @@ civicrm-sms-chat/                       (repo root = ext root)
 │       ├── GetContext.php              phones/consent/lines/permissions for the header state
 │       ├── GetMessages.php             thread page + poll cursor
 │       └── Send.php                    send one message
-├── xml/Menu/smschat.xml                civicrm/contact/view/smschat -> CRM_Smschat_Page_Chat
-├── templates/CRM/Smschat/Page/Chat.tpl  <sms-chat ...></sms-chat> mount point only
+├── xml/Menu/sms_chat.xml               civicrm/contact/view/sms_chat -> CRM_SmsChat_Page_Chat
+├── templates/CRM/SmsChat/Page/Chat.tpl  <sms-chat ...></sms-chat> mount point only
 ├── ui/                                 Vue 3 + Vite source (not shipped to prod path)
 │   ├── package.json / vite.config.js   build -> ../dist, format IIFE, custom element mode
 │   └── src/…                           SmsChat.ce.vue, MessageList, Bubble, Composer, LinePicker
@@ -189,9 +189,9 @@ civicrm-sms-chat/                       (repo root = ext root)
 - Tolerates ContactLayout's editor call (`contact_id = 0`): registers the tab
   entry with no per-contact work, skips when `!empty($context['caller'])`
   where expensive.
-- Entry: `id: 'smschat'`, `title: 'SMS Chat'`, `icon: 'crm-i fa-comments'`,
+- Entry: `id: 'sms_chat'`, `title: 'SMS Chat'`, `icon: 'crm-i fa-comments'`,
   `weight` near Activities, `url: CRM_Utils_System::url(
-  'civicrm/contact/view/smschat', "reset=1&cid={$cid}")`, no `class` (plain
+  'civicrm/contact/view/sms_chat', "reset=1&cid={$cid}")`, no `class` (plain
   `CRM.loadPage`), `contact_type` unset (all types — orgs text too).
 - Visibility: shown when the user can view the contact. **The tab always
   shows** — "no valid mobile number" is a state the UI explains, not a reason
@@ -226,7 +226,7 @@ interface LineResolver {
 
 Shipped: `TwilioLineResolver` (parses `From=` out of `api_params`, including
 `|`-separated pools; reads To/From from the inbound webhook request). Other
-providers: a dispatched event (`smschat.resolveLine`) lets any extension
+providers: a dispatched event (`sms_chat.resolvers`) lets any extension
 supply a resolver for its provider; unresolvable providers degrade gracefully
 (line = provider title, no number badge, inbound untagged). Adding provider
 support never touches this extension's core.
@@ -236,7 +236,7 @@ Written by:
   `hook_civicrm_inboundSMS` recovers To/From via the resolver and stashes
   them (the hook fires pre-activity, no id yet); then `hook_civicrm_post` on
   the just-created `Inbound SMS` activity writes the custom fields.
-  Optionally (setting `smschat_details_preamble`, default ON) also prepends
+  Optionally (setting `sms_chat_details_preamble`, default ON) also prepends
   the human-readable `From/To + <hr>` preamble to `details`, so the plain
   activity list stays informative for staff who never open the chat tab.
 - **Outbound via chat**: `SmsChat.send` knows the provider — writes the
@@ -407,17 +407,17 @@ config-as-code):
 
 1. **Send guard in `SmsChat.send`** (our path, always), driven by two
    settings:
-   - `smschat_allowed_recipients` (comma-separated E.164 numbers and/or
+   - `sms_chat_allowed_recipients` (comma-separated E.164 numbers and/or
      prefixes): when non-empty, sends to anything else are refused with a
      clear error.
-   - `smschat_environment_lockdown` (default TRUE): when
+   - `sms_chat_environment_lockdown` (default TRUE): when
      `CRM_Core_Config::environment()` is not 'Production' (core's own
      environment setting), deny-all unless the recipient matches the
      allowlist — dev can send, but only to allowlisted numbers.
    - Both env-loadable (`CIVICRM_SMSCHAT_ALLOWED_RECIPIENTS`,
      `CIVICRM_SMSCHAT_ENVIRONMENT_LOCKDOWN`) for installs that pin config
      from the environment.
-2. **Test mode** (`smschat_test_mode`): the send pipeline records the `SMS`
+2. **Test mode** (`sms_chat_test_mode`): the send pipeline records the `SMS`
    and `SMS delivery` activities exactly as a real send would (result
    `TEST-…`) and never calls the provider — the full UI loop is testable with
    zero provider traffic. (Replaces the earlier "mock provider row" idea:
@@ -471,7 +471,7 @@ called).
 
 ## 10. Roadmap (explicitly not v1)
 
-- **Global inbox** — `civicrm/smschat` page: recent conversations across all
+- **Global inbox** — `civicrm/sms_chat` page: recent conversations across all
   contacts, filterable by line (the Google Messages sidebar, for the client
   navigation "see everything" use case at org level, not per contact).
 - Unread tracking + tab count badge; browser notifications.
