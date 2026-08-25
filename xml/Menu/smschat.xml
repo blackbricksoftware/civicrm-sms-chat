@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<menu>
+  <!-- The SMS Chat tab body, AJAX-loaded into the contact summary tab panel.
+       Route access is the baseline; the page bounces without VIEW permission
+       on the specific contact, and every data call re-checks permissions in
+       the API layer (no new permission model: activity ACLs govern reading,
+       `send SMS` governs sending). -->
+  <item>
+    <path>civicrm/contact/view/smschat</path>
+    <page_callback>CRM_Smschat_Page_Chat</page_callback>
+    <title>SMS Chat</title>
+    <access_arguments>access CiviCRM</access_arguments>
+    <is_public>false</is_public>
+  </item>
+  <item>
+    <path>civicrm/admin/smschat</path>
+    <page_callback>CRM_Smschat_Form_Settings</page_callback>
+    <title>SMS Chat Settings</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+</menu>
