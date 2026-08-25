@@ -1,6 +1,6 @@
 # Changelog
 
-# v0.0.5 (draft)
+# v0.0.6 (draft)
 
 # v0.0.5 (2026-08-25)
 - Switching the line filter clears the thread immediately and shows "Loading…" until the new view arrives
