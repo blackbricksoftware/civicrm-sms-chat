@@ -27,10 +27,10 @@ jobs:
           cd ui && npm ci && npm run build && cd ..
           git diff --quiet -- dist || echo "::warning::committed dist/ was stale — run 'cd ui && npm run build' and commit before tagging"
 
-      - name: Set up PHP
+      - name: Set up PHP (minimum supported, so composer resolves deps every supported version can run)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.1'
           tools: composer:v2
 
       - name: Install Composer dependencies
