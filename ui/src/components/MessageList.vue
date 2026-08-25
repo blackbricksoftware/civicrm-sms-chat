@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch, nextTick, onMounted } from 'vue';
 import Bubble from './Bubble.vue';
+import { UNKNOWN } from '../colors.js';
 import { dayKey, dayLabel } from '../format.js';
 
 const props = defineProps({
@@ -83,7 +84,7 @@ defineExpose({ scrollToBottom });
     <div v-else-if="hasMore" class="sc-day sc-more"><button type="button" class="sc-link" @click="$emit('load-more')">Load older messages</button></div>
     <template v-for="g in groups" :key="g.key">
       <div class="sc-day"><span>{{ g.label }}</span></div>
-      <Bubble v-for="it in g.items" :key="it.m.id" :m="it.m" :show-sender="it.showSender" :color="it.m.lineId ? colors.get(it.m.lineId) : ''" @retry="emit('retry', $event)" />
+      <Bubble v-for="it in g.items" :key="it.m.id" :m="it.m" :show-sender="it.showSender" :color="(it.m.lineId && colors.get(it.m.lineId)) || UNKNOWN" @retry="emit('retry', $event)" />
     </template>
     <div v-if="reloading" class="sc-empty">Loading…</div>
     <div v-else-if="!messages.length" class="sc-empty">No text messages with this contact on this line.</div>

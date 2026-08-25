@@ -25,7 +25,7 @@ const meta = computed(() => {
 </script>
 
 <template>
-  <div class="sc-row" :class="[m.direction, m.kind, m.state || '', color ? 'has-line' : '']" :style="{ '--c': color || undefined }">
+  <div class="sc-row" :class="[m.direction, m.kind, m.state || '']" :style="{ '--c': color }">
     <div class="sc-bubble-wrap">
       <div v-if="showSender && m.senderName" class="sc-sender">{{ m.senderName }}</div>
       <div class="sc-bubble">

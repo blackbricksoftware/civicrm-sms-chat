@@ -154,6 +154,10 @@ watch(lineFilter, async () => {
   const v = ++view;
   reloading.value = true; error.value = '';
   loadingMore.value = false;
+  // Clear the previous view immediately: the old line's messages must not
+  // linger under the new filter while its first page loads.
+  messages.value = [];
+  hasMore.value = false;
   try {
     const msgs = await getMessages(props.contactId, { limit: PAGE, lineId: lineParam.value });
     if (v !== view) return; // superseded by a newer filter change
@@ -206,7 +210,7 @@ onBeforeUnmount(() => {
 .sc-number { color: #6b7280; font-size: 12px; }
 .sc-filter { display: flex; gap: 6px; flex-wrap: wrap; }
 .sc-chip { border: 1px solid #d0d5dd; background: #fff; border-radius: 999px; padding: 3px 10px; font-size: 12px; cursor: pointer; color: #344054; }
-.sc-chip.active { background: #1a73e8; border-color: #1a73e8; color: #fff; }
+.sc-chip.active { background: #3c4043; border-color: #3c4043; color: #fff; }
 .sc-chip-line { --c: #7f8c8d; display: inline-flex; align-items: center; gap: 6px; }
 .sc-chip-line.active { background: var(--c); border-color: var(--c); color: #fff; }
 .sc-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c, #7f8c8d); flex: none; }
@@ -221,18 +225,19 @@ onBeforeUnmount(() => {
 .sc-row.out .sc-bubble-wrap { align-items: flex-end; }
 .sc-sender { font-size: 11px; color: #6b7280; margin: 6px 6px 2px; }
 .sc-bubble { padding: 8px 12px; border-radius: 18px; white-space: pre-wrap; word-break: break-word; }
-.sc-row.in .sc-bubble { background: #f1f3f4; color: #1f2933; border-bottom-left-radius: 6px; }
-.sc-row.out .sc-bubble { background: #1a73e8; color: #fff; border-bottom-right-radius: 6px; }
-/* Line color coding: outbound bubbles take the line color; inbound keep a
-   readable neutral fill with a tinted edge in the line color. */
-.sc-row.out.has-line .sc-bubble { background: var(--c); }
-.sc-row.in.has-line .sc-bubble { background: color-mix(in srgb, var(--c) 12%, #f1f3f4); border-left: 3px solid var(--c); }
+/* Line color coding, one rule for every message: outbound bubbles take the
+   line color; inbound keep a readable neutral fill tinted with the line color
+   and a darker band on the left. Messages with no line attribution use the
+   same treatment in gray (--c falls back to the Unknown color), so inbound
+   and outbound always pair up visually and nothing collides with the palette. */
+.sc-row.in .sc-bubble { background: color-mix(in srgb, var(--c, #7f8c8d) 12%, #f1f3f4); border-left: 3px solid var(--c, #7f8c8d); color: #1f2933; border-bottom-left-radius: 6px; }
+.sc-row.out .sc-bubble { background: var(--c, #7f8c8d); color: #fff; border-bottom-right-radius: 6px; }
 .sc-row.tapback .sc-bubble { background: transparent; border: 1px dashed #d0d5dd; color: #6b7280; font-size: 12px; padding: 4px 10px; }
 .sc-row.pending .sc-bubble { opacity: .6; }
 .sc-row.failed .sc-bubble { background: #fee4e2; color: #b42318; }
 .sc-meta { font-size: 10.5px; color: #98a2b3; margin: 2px 6px 4px; }
 .sc-failed { color: #b42318; }
-.sc-new { position: absolute; left: 50%; transform: translateX(-50%); bottom: 118px; background: #1a73e8; color: #fff; border: 0; border-radius: 999px; padding: 6px 14px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+.sc-new { position: absolute; left: 50%; transform: translateX(-50%); bottom: 118px; background: #3c4043; color: #fff; border: 0; border-radius: 999px; padding: 6px 14px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 .sc-composer { border-top: 1px solid #eceff3; padding: 8px 12px 6px; background: #f9fafb; }
 .sc-blocked { background: #fffaeb; border: 1px solid #fedf89; color: #93370d; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; font-size: 13px; }
 .sc-blocked ul { margin: 4px 0 0 18px; padding: 0; }
@@ -241,12 +246,12 @@ onBeforeUnmount(() => {
 .sc-compose-row.disabled { opacity: .55; }
 .sc-line { font-size: 12px; padding: 6px 8px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; max-width: 200px; }
 .sc-input { flex: 1; resize: none; border: 1px solid #d0d5dd; border-radius: 18px; padding: 8px 14px; font: inherit; min-height: 38px; max-height: 160px; background: #fff; }
-.sc-input:focus { outline: 2px solid #1a73e8; outline-offset: -1px; }
-.sc-send { border: 0; background: #1a73e8; color: #fff; border-radius: 999px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
+.sc-input:focus { outline: 2px solid #3c4043; outline-offset: -1px; }
+.sc-send { border: 0; background: #3c4043; color: #fff; border-radius: 999px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
 .sc-send:disabled { background: #b2c8e8; cursor: default; }
 .sc-counter { text-align: right; font-size: 11px; color: #98a2b3; margin-top: 4px; }
 .sc-counter.warn { color: #b54708; }
 .sc-counter.over { color: #b42318; font-weight: 600; }
-.sc-link { background: none; border: 0; color: #1a73e8; cursor: pointer; font: inherit; padding: 0; }
+.sc-link { background: none; border: 0; color: #3c4043; cursor: pointer; font: inherit; padding: 0; }
 .sc-more { background: transparent; }
 </style>

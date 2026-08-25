@@ -2,6 +2,10 @@
 
 # v0.0.5 (draft)
 
+# v0.0.5 (2026-08-25)
+- Switching the line filter clears the thread immediately and shows "Loading…" until the new view arrives
+- Messages with no line attribution use the same line-color treatment in gray (no more default blue on old outbound, which broke inbound/outbound pairing and clashed with the palette); UI chrome (send button, active All chip, new-message pill) moved off blue so palette colors mean "line" only
+
 # v0.0.4 (2026-08-25)
 - Inbound tagging: resolve the SMS provider from the webhook request the way core does (`provider_id=N`, `provider=<key>`, or `mailing_id=N`) — previously only `provider_id` worked, so by-name webhooks got no preamble and no line attribution
 - Custom-field availability now requires the SMS_Chat group and fields to be ACTIVE (API4 only publishes active fields); sending and tagging degrade gracefully instead of failing with "Invalid field"
