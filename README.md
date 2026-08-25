@@ -51,19 +51,16 @@ production data — that is what arms the lockdown.
 
 ## Releasing
 
-1. Bump `<version>` in `info.xml` on `main` and note it in `CHANGELOG.md`.
-2. Run the **Release** workflow (Actions → Release → Run workflow).
-
-The workflow builds the UI and creates the `vX.Y.Z` tag on a commit that
-includes `dist/`, so the GitHub release zip and Packagist/composer installs
-of that tag both carry the bundle while `dist/` stays out of `main`. Nothing
-to keep in sync by hand.
+1. `cd ui && npm run build` and commit `dist/` (it is committed so release
+   tags — and therefore Packagist/composer installs — carry the bundle).
+2. Bump `<version>` in `info.xml`, note it in `CHANGELOG.md`, commit.
+3. Tag `vX.Y.Z` and push. The workflow builds the release zip.
 
 ## Development
 
 The UI lives in `ui/` (Vue 3 + Vite) and builds to `dist/smschat.js` (an
-IIFE — CiviCRM's AJAX tab pipeline cannot load ES modules). `dist/` is not on
-`main`; release tags include it (see Releasing).
+IIFE — CiviCRM's AJAX tab pipeline cannot load ES modules). `dist/` is
+committed; rebuild and commit it with any UI change.
 
     cd ui && npm install && npm run build
 

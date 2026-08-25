@@ -1,0 +1,4 @@
+# Built UI bundle is committed so tags (and therefore Packagist installs)
+# carry it. Keep it out of diffs/PR views and language stats.
+dist/** linguist-generated=true -diff
+ui/package-lock.json linguist-generated=true -diff

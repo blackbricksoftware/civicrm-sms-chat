@@ -346,11 +346,10 @@ going forward our own sends stamp it (below).
   `defineCustomElement(SmsChat)` → `customElements.define('sms-chat', ...)`.
   Shadow DOM gives us style isolation from crm-* CSS both ways; the component
   carries its own styles (injected into the shadow root by the CE build).
-- `dist/` is a build artifact, NOT on the main branch. The release workflow
-  builds it and creates each `vX.Y.Z` tag on a commit that INCLUDES `dist/`,
-  so both the GitHub release zip and Packagist/composer installs of the tag
-  carry the bundle. No node in any deploy path, no version pins to keep in
-  sync.
+- `dist/` is committed (marked `linguist-generated -diff` so it stays out of
+  diffs), because Packagist packages a tag's tree: a tag without `dist/`
+  installs without the UI. Release = build, commit, bump, tag, push — the
+  same flow as every other extension. No node in any deploy path.
 - Mounting: `Chat.tpl` is one line — `<sms-chat contact-id="{$contactId}">`
   — so remounting is automatic on every tab open, and the poll timer dies in
   `disconnectedCallback` on tab close. No `crmLoad` choreography needed.
