@@ -1,6 +1,8 @@
 # Changelog
 
 # v0.0.3 (draft)
+
+# v0.0.3 (2026-08-24)
 - Extension key renamed `smschat` → `sms_chat`; settings are now `sms_chat_*`, routes `civicrm/contact/view/sms_chat` and `civicrm/admin/sms_chat`; env var names unchanged (`CIVICRM_SMSCHAT_*`)
 - Line filter is applied server-side, so a filtered view pages exactly like the full thread; new "Unknown" chip for messages with no line attribution
 
