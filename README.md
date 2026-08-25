@@ -5,6 +5,8 @@ record. Click a contact, open **SMS Chat**, see the whole thread (inbound and
 outbound, across all of your SMS lines), type, send, and watch replies appear
 without refreshing.
 
+![SMS Chat tab on a contact record](images/sms_chat.png)
+
 Built on CiviCRM's native SMS machinery — messages are ordinary `Inbound
 SMS` / `SMS delivery` activities, so everything remains visible in the
 activity list, reports, and SearchKit. No parallel message store.
