@@ -1,6 +1,10 @@
 # Changelog
 
-# v0.0.3 (draft)
+# v0.0.5 (draft)
+
+# v0.0.4 (2026-08-25)
+- Inbound tagging: resolve the SMS provider from the webhook request the way core does (`provider_id=N`, `provider=<key>`, or `mailing_id=N`) — previously only `provider_id` worked, so by-name webhooks got no preamble and no line attribution
+- Custom-field availability now requires the SMS_Chat group and fields to be ACTIVE (API4 only publishes active fields); sending and tagging degrade gracefully instead of failing with "Invalid field"
 
 # v0.0.3 (2026-08-24)
 - Extension key renamed `smschat` → `sms_chat`; settings are now `sms_chat_*`, routes `civicrm/contact/view/sms_chat` and `civicrm/admin/sms_chat`; env var names unchanged (`CIVICRM_SMSCHAT_*`)

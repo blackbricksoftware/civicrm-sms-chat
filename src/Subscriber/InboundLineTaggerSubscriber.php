@@ -4,10 +4,10 @@ declare(strict_types = 1);
 namespace BlackBrickSoftware\CiviCRMSmsChat\Subscriber;
 
 use Civi\Api4\Activity;
-use Civi\Api4\SmsProvider;
 use Civi\Core\Event\GenericHookEvent;
 use BlackBrickSoftware\CiviCRMSmsChat\Line\LineResolvers;
 use BlackBrickSoftware\CiviCRMSmsChat\Service\Config;
+use BlackBrickSoftware\CiviCRMSmsChat\Service\CustomData;
 use BlackBrickSoftware\CiviCRMSmsChat\Service\Lines;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -45,21 +45,25 @@ class InboundLineTaggerSubscriber implements EventSubscriberInterface {
     $message = $event->message;
     self::$pending = NULL;
 
-    $providerId = (int) ($_REQUEST['provider_id'] ?? 0);
-    if (!$providerId) {
-      return;
-    }
+    // Resolve the provider exactly as core's callback page does
+    // (CRM_SMS_Page_Callback): from the request, which may carry
+    // provider_id=N, provider=<extension key>, or mailing_id=N — webhooks are
+    // registered in all three shapes in the wild. Each resolver then decides
+    // by the provider OBJECT whether it can read To/From for it.
     try {
-      $providerRow = SmsProvider::get(FALSE)->addSelect('id', 'name', 'title', 'api_params')
-        ->addWhere('id', '=', $providerId)->execute()->first();
-      $providerObj = \CRM_SMS_Provider::singleton(['provider_id' => $providerId]);
+      $providerObj = \CRM_SMS_Provider::singleton($_REQUEST);
     }
     catch (\Throwable $e) {
-      \Civi::log()->warning('sms_chat: could not resolve inbound provider ' . $providerId . ': ' . $e->getMessage());
+      \Civi::log()->warning('sms_chat: could not resolve inbound provider from request: ' . $e->getMessage());
       return;
     }
-    $resolver = $providerRow ? LineResolvers::for($providerRow) : NULL;
-    $numbers = $resolver ? $resolver->inboundNumbers($providerObj, $message) : NULL;
+    $numbers = NULL;
+    foreach (LineResolvers::all() as $resolver) {
+      $numbers = $resolver->inboundNumbers($providerObj, $message);
+      if ($numbers) {
+        break;
+      }
+    }
     if (!$numbers) {
       return;
     }
@@ -84,6 +88,10 @@ class InboundLineTaggerSubscriber implements EventSubscriberInterface {
     $pending = self::$pending;
     self::$pending = NULL; // before the update: it re-fires hook_civicrm_post
 
+    if (!CustomData::available()) {
+      \Civi::log()->warning('sms_chat: SMS_Chat custom fields are not active; inbound activity ' . $event->id . ' left untagged');
+      return;
+    }
     try {
       Activity::update(FALSE)
         ->addWhere('id', '=', $event->id)

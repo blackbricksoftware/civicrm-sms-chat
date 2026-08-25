@@ -192,11 +192,7 @@ final class Conversation {
   }
 
   private static function customFieldsAvailable(): bool {
-    static $available = NULL;
-    if ($available === NULL) {
-      $available = (bool) \CRM_Core_BAO_CustomField::getCustomFieldID('line_number', 'SMS_Chat');
-    }
-    return $available;
+    return CustomData::available();
   }
 
 }

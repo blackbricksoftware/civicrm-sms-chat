@@ -69,17 +69,18 @@ class Sender {
     $lineNumber = $line['numbers'][0] ?? NULL;
     $subject = ts('SMS Chat via %1', [1 => $line['title']]);
 
-    $parentId = (int) Activity::create(FALSE)
+    $parent = Activity::create(FALSE)
       ->addValue('activity_type_id:name', 'SMS')
       ->addValue('source_contact_id', $senderContactId)
       ->addValue('target_contact_id', [$contactId])
       ->addValue('activity_date_time', 'now')
       ->addValue('status_id:name', 'Completed')
       ->addValue('subject', $subject)
-      ->addValue('details', $text)
-      ->addValue('SMS_Chat.line_number', $lineNumber)
-      ->addValue('SMS_Chat.peer_number', $to)
-      ->execute()->first()['id'];
+      ->addValue('details', $text);
+    if (CustomData::available()) {
+      $parent->addValue('SMS_Chat.line_number', $lineNumber)->addValue('SMS_Chat.peer_number', $to);
+    }
+    $parentId = (int) $parent->execute()->first()['id'];
 
     $maxBefore = (int) \CRM_Core_DAO::singleValueQuery('SELECT MAX(id) FROM civicrm_activity');
 
@@ -123,11 +124,13 @@ class Sender {
       }
     }
 
-    Activity::update(FALSE)
-      ->addWhere('id', '=', $deliveryId)
-      ->addValue('SMS_Chat.line_number', $lineNumber)
-      ->addValue('SMS_Chat.peer_number', $to)
-      ->execute();
+    if (CustomData::available()) {
+      Activity::update(FALSE)
+        ->addWhere('id', '=', $deliveryId)
+        ->addValue('SMS_Chat.line_number', $lineNumber)
+        ->addValue('SMS_Chat.peer_number', $to)
+        ->execute();
+    }
 
     return $deliveryId;
   }
